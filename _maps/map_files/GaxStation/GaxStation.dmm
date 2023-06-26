@@ -7177,7 +7177,7 @@
 /obj/effect/turf_decal/trimline/yellow/filled/line{
 	dir = 9
 	},
-/obj/machinery/computer/rdconsole/production{
+/obj/machinery/modular_computer/console/preset/civilian{
 	dir = 4
 	},
 /obj/machinery/light_switch{
@@ -41421,7 +41421,7 @@
 /turf/open/floor/plating,
 /area/maintenance/solars/port/aft)
 "uJp" = (
-/obj/machinery/computer/rdconsole/core{
+/obj/machinery/computer/rdconsole{
 	dir = 8
 	},
 /obj/effect/turf_decal/stripes/line{
@@ -44132,7 +44132,7 @@
 /obj/effect/turf_decal/trimline/purple/filled/line{
 	dir = 1
 	},
-/obj/machinery/computer/rdconsole/robotics,
+/obj/machinery/modular_computer/console/preset/research,
 /turf/open/floor/plasteel,
 /area/science/robotics/lab)
 "vXu" = (

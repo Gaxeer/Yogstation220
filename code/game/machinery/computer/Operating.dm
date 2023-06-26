@@ -137,8 +137,7 @@
 		return
 	if(action == "sync") //TG has this as a switch with a single entry :)))))
 		sync_surgeries()
-		. = TRUE
-	. = TRUE
+	return TRUE
 
 #undef MENU_OPERATION
 #undef MENU_SURGERIES

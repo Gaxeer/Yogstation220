@@ -39201,7 +39201,7 @@
 /turf/open/floor/plasteel,
 /area/engine/atmos/foyer)
 "cjX" = (
-/obj/machinery/computer/rdconsole/core{
+/obj/machinery/computer/rdconsole{
 	dir = 4
 	},
 /obj/effect/turf_decal/stripes/line,
@@ -44417,7 +44417,7 @@
 /turf/open/floor/plasteel/dark,
 /area/hallway/primary/aft)
 "cGa" = (
-/obj/machinery/computer/rdconsole/robotics{
+/obj/machinery/modular_computer/console/preset/research{
 	dir = 4
 	},
 /obj/machinery/requests_console{
@@ -68197,7 +68197,7 @@
 /obj/effect/turf_decal/trimline/yellow/filled/line{
 	dir = 4
 	},
-/obj/machinery/computer/rdconsole/production{
+/obj/machinery/modular_computer/console/preset/civilian{
 	dir = 8
 	},
 /turf/open/floor/plasteel,
@@ -71632,7 +71632,7 @@
 /turf/open/floor/plasteel,
 /area/hallway/secondary/entry)
 "rtq" = (
-/obj/machinery/computer/rdconsole/experiment{
+/obj/machinery/modular_computer/console/preset/research{
 	dir = 8
 	},
 /obj/effect/turf_decal/stripes/line{

@@ -8,16 +8,6 @@
 #define RDSCREEN_DESIGNDISK 20
 #define RDSCREEN_DESIGNDISK_UPLOAD 21
 #define RDSCREEN_DECONSTRUCT 3
-#define RDSCREEN_PROTOLATHE 40
-#define RDSCREEN_PROTOLATHE_MATERIALS 41
-#define RDSCREEN_PROTOLATHE_CHEMICALS 42
-#define RDSCREEN_PROTOLATHE_CATEGORY_VIEW 43
-#define RDSCREEN_PROTOLATHE_SEARCH 44
-#define RDSCREEN_IMPRINTER 50
-#define RDSCREEN_IMPRINTER_MATERIALS 51
-#define RDSCREEN_IMPRINTER_CHEMICALS 52
-#define RDSCREEN_IMPRINTER_CATEGORY_VIEW 53
-#define RDSCREEN_IMPRINTER_SEARCH 54
 #define RDSCREEN_SETTINGS 61
 #define RDSCREEN_DEVICE_LINKING 62
 #define RDSCREEN_TECHWEB 70
@@ -43,13 +33,6 @@
 #define RDSCREEN_UI_SNODE_CHECK if(!selected_node) { return RDSCREEN_TEXT_NO_SNODE }
 #define RDSCREEN_UI_SDESIGN_CHECK if(!selected_design) { return RDSCREEN_TEXT_NO_SDESIGN }
 
-///Defines for the Protolathe screens, see: [/modules/research/machinery/protolathe][Protolathe]
-#define RESEARCH_FABRICATOR_SCREEN_MAIN 1
-#define RESEARCH_FABRICATOR_SCREEN_CHEMICALS 2
-#define RESEARCH_FABRICATOR_SCREEN_MATERIALS 3
-#define RESEARCH_FABRICATOR_SCREEN_SEARCH 4
-#define RESEARCH_FABRICATOR_SCREEN_CATEGORYVIEW 5
-
 ///Department flags for techwebs. Defines which department can print what from each protolathe so Cargo can't print guns, etc.
 #define DEPARTMENTAL_FLAG_SECURITY		(1<<0)
 #define DEPARTMENTAL_FLAG_MEDICAL		(1<<1)
@@ -64,7 +47,7 @@
 
 #define DESIGN_ID_IGNORE "IGNORE_THIS_DESIGN"			///For instances where we don't want a design showing up due to it being for debug/sanity purposes
 
-#define RESEARCH_MATERIAL_RECLAMATION_ID "__materials"
+#define RESEARCH_MATERIAL_DESTROY_ID "__destroy"
 
 ///Techweb names for new point types. Can be used to define specific point values for specific types of research (science, security, engineering, etc.)
 #define TECHWEB_POINT_TYPE_GENERIC	"General Research"

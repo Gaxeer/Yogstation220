@@ -10,7 +10,10 @@
 	materials = list(/datum/material/iron = 700, /datum/material/glass = 50)
 	construction_time=100
 	build_path = /obj/item/stock_parts/cell/empty
-	category = list("Misc","Power Designs","Machinery","initial")
+	category = category = list(
+		RND_CATEGORY_INITIAL,
+		RND_CATEGORY_STOCK_PARTS + RND_SUBCATEGORY_STOCK_PARTS_1
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_ALL
 
 /datum/design/high_cell
@@ -21,7 +24,9 @@
 	materials = list(/datum/material/iron = 700, /datum/material/glass = 60)
 	construction_time=100
 	build_path = /obj/item/stock_parts/cell/high/empty
-	category = list("Misc","Power Designs")
+	category = list(
+		RND_CATEGORY_STOCK_PARTS + RND_SUBCATEGORY_STOCK_PARTS_2
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_ENGINEERING
 
 /datum/design/super_cell
@@ -32,7 +37,9 @@
 	materials = list(/datum/material/iron = 700, /datum/material/gold = 75, /datum/material/silver = 75, /datum/material/glass = 80)
 	construction_time=100
 	build_path = /obj/item/stock_parts/cell/super/empty
-	category = list("Misc","Power Designs")
+	category = list(
+		RND_CATEGORY_STOCK_PARTS + RND_SUBCATEGORY_STOCK_PARTS_3
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_ENGINEERING
 
 /datum/design/hyper_cell
@@ -43,7 +50,9 @@
 	materials = list(/datum/material/iron = 700, /datum/material/gold = 150, /datum/material/silver = 150, /datum/material/glass = 80, /datum/material/dilithium = 500) //Yogs: added dilithium
 	construction_time=100
 	build_path = /obj/item/stock_parts/cell/hyper/empty
-	category = list("Misc","Power Designs")
+	category = list(
+		RND_CATEGORY_STOCK_PARTS + RND_SUBCATEGORY_STOCK_PARTS_3
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_ENGINEERING
 
 /datum/design/bluespace_cell
@@ -54,7 +63,9 @@
 	materials = list(/datum/material/iron = 800, /datum/material/gold = 120, /datum/material/glass = 160, /datum/material/diamond = 160, /datum/material/titanium = 300, /datum/material/bluespace = 100, /datum/material/dilithium = 500) //Yogs: added dilithium
 	construction_time=100
 	build_path = /obj/item/stock_parts/cell/bluespace/empty
-	category = list("Misc","Power Designs")
+	category = list(
+		RND_CATEGORY_STOCK_PARTS + RND_SUBCATEGORY_STOCK_PARTS_4
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_ENGINEERING
 
 /datum/design/light_replacer
@@ -64,7 +75,9 @@
 	build_type = PROTOLATHE
 	materials = list(/datum/material/iron = 1500, /datum/material/silver = 150, /datum/material/glass = 3000)
 	build_path = /obj/item/lightreplacer
-	category = list("Power Designs")
+	category = list(
+		RND_CATEGORY_TOOLS + RND_SUBCATEGORY_TOOLS_JANITORIAL
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_SERVICE | DEPARTMENTAL_FLAG_ENGINEERING
 
 /datum/design/inducer
@@ -74,7 +87,9 @@
 	build_type = PROTOLATHE
 	materials = list(/datum/material/iron = 3000, /datum/material/glass = 1000)
 	build_path = /obj/item/inducer/sci
-	category = list("Power Designs")
+	category = list(
+		RND_CATEGORY_TOOLS + RND_SUBCATEGORY_TOOLS_ENGINEERING
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_ENGINEERING
 
 /datum/design/board/pacman
@@ -82,7 +97,9 @@
 	desc = "The circuit board that for a PACMAN-type portable generator."
 	id = "pacman"
 	build_path = /obj/item/circuitboard/machine/pacman
-	category = list("Engineering Machinery")
+	category = list(
+		RND_CATEGORY_MACHINE + RND_SUBCATEGORY_MACHINE_ENGINEERING
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING
 
 /datum/design/board/pacman/super

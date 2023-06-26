@@ -6,5 +6,7 @@
 	construction_time = 80
 	materials = list(/datum/material/iron = 200, /datum/material/glass = 500, /datum/material/silver=300, /datum/material/gold=300)
 	build_path = /obj/item/organ/heart/nanite
-	category = list("Misc", "Medical Designs")
+	category = list(
+		RND_CATEGORY_CYBERNETICS + RND_SUBCATEGORY_CYBERNETICS_ORGANS
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_MEDICAL | DEPARTMENTAL_FLAG_SCIENCE

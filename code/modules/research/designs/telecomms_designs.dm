@@ -7,7 +7,9 @@
 	desc = "Allows for the construction of Subspace Receiver equipment."
 	id = "s-receiver"
 	build_path = /obj/item/circuitboard/machine/telecomms/receiver
-	category = list("Subspace Telecomms")
+	category = list(
+		RND_CATEGORY_MACHINE + RND_SUBCATEGORY_MACHINE_TELECOMMS
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_SCIENCE
 
 /datum/design/board/telecomms_bus
@@ -15,7 +17,9 @@
 	desc = "Allows for the construction of Telecommunications Bus Mainframes."
 	id = "s-bus"
 	build_path = /obj/item/circuitboard/machine/telecomms/bus
-	category = list("Subspace Telecomms")
+	category = list(
+		RND_CATEGORY_MACHINE + RND_SUBCATEGORY_MACHINE_TELECOMMS
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_SCIENCE
 
 /datum/design/board/telecomms_hub
@@ -23,7 +27,9 @@
 	desc = "Allows for the construction of Telecommunications Hub Mainframes."
 	id = "s-hub"
 	build_path = /obj/item/circuitboard/machine/telecomms/hub
-	category = list("Subspace Telecomms")
+	category = list(
+		RND_CATEGORY_MACHINE + RND_SUBCATEGORY_MACHINE_TELECOMMS
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_SCIENCE
 
 /datum/design/board/telecomms_relay
@@ -31,7 +37,9 @@
 	desc = "Allows for the construction of Telecommunications Relay Mainframes."
 	id = "s-relay"
 	build_path = /obj/item/circuitboard/machine/telecomms/relay
-	category = list("Subspace Telecomms")
+	category = list(
+		RND_CATEGORY_MACHINE + RND_SUBCATEGORY_MACHINE_TELECOMMS
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_SCIENCE
 
 /datum/design/board/telecomms_processor
@@ -39,7 +47,9 @@
 	desc = "Allows for the construction of Telecommunications Processor equipment."
 	id = "s-processor"
 	build_path = /obj/item/circuitboard/machine/telecomms/processor
-	category = list("Subspace Telecomms")
+	category = list(
+		RND_CATEGORY_MACHINE + RND_SUBCATEGORY_MACHINE_TELECOMMS
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_SCIENCE
 
 /datum/design/board/telecomms_server
@@ -47,7 +57,9 @@
 	desc = "Allows for the construction of Telecommunications Servers."
 	id = "s-server"
 	build_path = /obj/item/circuitboard/machine/telecomms/server
-	category = list("Subspace Telecomms")
+	category = list(
+		RND_CATEGORY_MACHINE + RND_SUBCATEGORY_MACHINE_TELECOMMS
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_SCIENCE
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_SCIENCE
 
@@ -56,7 +68,9 @@
 	desc = "Allows for the construction of Telecommunications Messaging Servers."
 	id = "s-messaging"
 	build_path = /obj/item/circuitboard/machine/telecomms/message_server
-	category = list("Subspace Telecomms")
+	category = list(
+		RND_CATEGORY_MACHINE + RND_SUBCATEGORY_MACHINE_TELECOMMS
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_SCIENCE
 
 /datum/design/board/subspace_broadcaster
@@ -64,5 +78,7 @@
 	desc = "Allows for the construction of Subspace Broadcasting equipment."
 	id = "s-broadcaster"
 	build_path = /obj/item/circuitboard/machine/telecomms/broadcaster
-	category = list("Subspace Telecomms")
+	category = list(
+		RND_CATEGORY_MACHINE + RND_SUBCATEGORY_MACHINE_TELECOMMS
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_SCIENCE

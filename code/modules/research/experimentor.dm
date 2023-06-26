@@ -130,8 +130,6 @@
 
 /obj/machinery/rnd/experimentor/ui_interact(mob/user)
 	var/list/dat = list("<center>")
-	if(!linked_console)
-		dat += "<b><a href='byond://?src=[REF(src)];function=search'>Scan for R&D Console</A></b>"
 	if(loaded_item)
 		dat += "<b>Loaded Item:</b> [loaded_item]"
 
@@ -181,10 +179,6 @@
 	if(href_list["close"])
 		usr << browse(null, "window=experimentor")
 		return
-	if(scantype == "search")
-		var/obj/machinery/computer/rdconsole/D = locate(/obj/machinery/computer/rdconsole) in oview(3,src)
-		if(D)
-			linked_console = D
 	else if(scantype == "eject")
 		ejectItem()
 	else if(scantype == "refresh")
@@ -220,8 +214,7 @@
 		if(dotype != FAIL)
 			var/list/nodes = techweb_item_boost_check(process)
 			var/picked = pickweight(nodes)		//This should work.
-			if(linked_console)
-				linked_console.stored_research.boost_with_path(SSresearch.techweb_node_by_id(picked), process.type)
+			stored_research.boost_with_path(SSresearch.techweb_node_by_id(picked), process.type)
 
 /obj/machinery/rnd/experimentor/proc/matchReaction(matching,reaction)
 	var/obj/item/D = matching
@@ -480,10 +473,6 @@
 	if(exp == SCANTYPE_OBLITERATE)
 		autoexperiment = 0
 		visible_message(span_warning("[exp_on] activates the crushing mechanism, [exp_on] is destroyed!"))
-		if(linked_console.linked_lathe)
-			var/datum/component/material_container/linked_materials = linked_console.linked_lathe.GetComponent(/datum/component/material_container)
-			for(var/material in exp_on.materials)
-				linked_materials.insert_amount_mat( min((linked_materials.max_amount - linked_materials.total_amount), (exp_on.materials[material])), material)
 		if(prob(EFFECT_PROB_LOW) && criticalReaction)
 			visible_message(span_warning("[src]'s crushing mechanism slowly and smoothly descends, flattening the [exp_on]!"))
 			new /obj/item/stack/sheet/plasteel(get_turf(pick(oview(1,src))))

@@ -89,7 +89,7 @@
 				/obj/item/stack/sheet/metal = 6,
 				/obj/item/stack/sheet/animalhide/gondola = 1)
 	time = 4 SECONDS
-	category= CAT_WEAPONRY
+	category = CAT_WEAPONRY
 	subcategory = CAT_WEAPON
 
 /datum/crafting_recipe/tailclub

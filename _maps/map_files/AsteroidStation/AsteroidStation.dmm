@@ -6252,7 +6252,7 @@
 /turf/open/floor/plasteel/airless/solarpanel,
 /area/solar/port/fore)
 "aZP" = (
-/obj/machinery/computer/rdconsole/experiment{
+/obj/machinery/modular_computer/console/preset/research{
 	dir = 1
 	},
 /turf/open/floor/plasteel/white,
@@ -26165,7 +26165,7 @@
 /turf/open/floor/plasteel/dark,
 /area/maintenance/starboard/fore)
 "hGs" = (
-/obj/machinery/computer/rdconsole/core{
+/obj/machinery/computer/rdconsole{
 	dir = 8
 	},
 /turf/open/floor/plasteel/white,
@@ -56780,7 +56780,7 @@
 /obj/machinery/light{
 	dir = 1
 	},
-/obj/machinery/computer/rdconsole/production,
+/obj/machinery/modular_computer/console/preset/civilian,
 /obj/effect/turf_decal/trimline/red/filled/line{
 	dir = 1
 	},
@@ -72941,7 +72941,7 @@
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer2{
 	dir = 8
 	},
-/obj/machinery/computer/rdconsole/robotics{
+/obj/machinery/modular_computer/console/preset/research{
 	dir = 1
 	},
 /turf/open/floor/plasteel/white,

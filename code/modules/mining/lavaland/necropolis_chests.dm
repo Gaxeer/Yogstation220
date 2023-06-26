@@ -87,7 +87,9 @@ GLOBAL_LIST_EMPTY(aide_list)
 	blueprints[1] = new modkit_design
 
 /datum/design/unique_modkit
-	category = list("Mining Designs", "Cyborg Upgrade Modules") //can't be normally obtained
+	category = list(
+		RND_CATEGORY_TOOLS + RND_SUBCATEGORY_TOOLS_PKA_MODS,
+	)
 	build_type = PROTOLATHE | MECHFAB
 	departmental_flags = DEPARTMENTAL_FLAG_CARGO
 

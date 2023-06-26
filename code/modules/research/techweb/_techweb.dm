@@ -79,7 +79,6 @@
 		CHECK_TICK
 	for(var/v in consoles_accessing)
 		var/obj/machinery/computer/rdconsole/V = v
-		V.rescan_views()
 		V.updateUsrDialog()
 
 /datum/techweb/proc/add_point_list(list/pointlist)
@@ -316,7 +315,6 @@
 	if(autoupdate_consoles)
 		for(var/v in consoles_accessing)
 			var/obj/machinery/computer/rdconsole/V = v
-			V.rescan_views()
 			V.updateUsrDialog()
 
 //Laggy procs to do specific checks, just in case. Don't use them if you can just use the vars that already store all this!
@@ -361,7 +359,7 @@
 
 /datum/techweb/specialized/autounlocking
 	var/design_autounlock_buildtypes = NONE
-	var/design_autounlock_categories = list("initial")		//if a design has a buildtype that matches the abovea and either has a category in this or this is null, unlock it.
+	var/design_autounlock_categories = list(RND_CATEGORY_INITIAL)		//if a design has a buildtype that matches the abovea and either has a category in this or this is null, unlock it.
 	var/node_autounlock_ids = list()				//autounlock nodes of this type.
 
 /datum/techweb/specialized/autounlocking/New()

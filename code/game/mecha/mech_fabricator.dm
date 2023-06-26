@@ -4,41 +4,49 @@
 	name = "exosuit fabricator"
 	desc = "Nothing is being built."
 	density = TRUE
+
+	req_access = list(ACCESS_ROBO_CONTROL)
+	circuit = /obj/item/circuitboard/machine/mechfab
+
 	use_power = IDLE_POWER_USE
 	idle_power_usage = 20
 	active_power_usage = 5000
-	
-	req_access = list(ACCESS_ROBO_CONTROL)
+
+	subsystem_type = /datum/controller/subsystem/processing/fastprocess
+
 	///Whether the access is hacked or not
 	var/hacked = FALSE
+
 	///World ticks the machine is electified for
 	var/seconds_electrified = MACHINE_NOT_ELECTRIFIED
 
-
-	circuit = /obj/item/circuitboard/machine/mechfab
-	subsystem_type = /datum/controller/subsystem/processing/fastprocess
 	/// Controls whether or not the more dangerous designs have been unlocked by a head's id manually, rather than alert level unlocks
 	var/authorization_override = FALSE
-	/// ID card of the person using the machine for the purpose of tracking access
-	var/obj/item/card/id/id_card = new()
+
 	/// Current items in the build queue.
-	var/list/queue = list()
+	var/list/datum/design/queue
+
 	/// Whether or not the machine is building the entire queue automagically.
 	var/process_queue = FALSE
 
 	/// The current design datum that the machine is building.
 	var/datum/design/being_built
+
 	/// World time when the build will finish.
 	var/build_finish = 0
+
 	/// World time when the build started.
 	var/build_start = 0
+
 	/// Reference to all materials used in the creation of the item being_built.
 	var/list/build_materials
+
 	/// Part currently stored in the Exofab.
 	var/obj/item/stored_part
 
 	/// Coefficient for the speed of item building. Based on the installed parts.
 	var/time_coeff = 1
+
 	/// Coefficient for the efficiency of material usage in item building. Based on the installed parts.
 	var/component_coeff = 1
 
@@ -51,38 +59,57 @@
 	/// Reference to a remote material inventory, such as an ore silo.
 	var/datum/component/remote_materials/rmat
 
-	/// A list of categories that valid MECHFAB design datums will broadly categorise themselves under.
-	var/list/part_sets = list(
-								"Cyborg",
-								"Ripley",
-								"Odysseus",
-								"Firefighter",
-								"Clarke",
-								"Gygax",
-								"Durand",
-								"H.O.N.K",
-								"Phazon",
-								"Sidewinder",
-								"Exosuit Equipment",
-								"Exosuit Ammunition",
-								"Cyborg Upgrade Modules",
-								"Cybernetics",
-								"Implants",
-								"Control Interfaces",
-								"IPC Components",
-								"Misc"
-								)
+	/// All designs in the techweb that can be fabricated by this machine, since the last update.
+	var/list/datum/design/cached_designs
 
 /obj/machinery/mecha_part_fabricator/Initialize(mapload)
+	queue = list()
 	stored_research = SSresearch.science_tech
 	rmat = AddComponent(/datum/component/remote_materials, "mechfab", mapload && link_on_init)
 	RefreshParts() //Recalculating local material sizes if the fab isn't linked
 	wires = new /datum/wires/mecha_part_fabricator(src)
+	RegisterSignal(
+		stored_research,
+		list(COMSIG_TECHWEB_ADD_DESIGN, COMSIG_TECHWEB_REMOVE_DESIGN),
+		.proc/on_techweb_update
+	)
 	return ..()
 
 /obj/machinery/mecha_part_fabricator/Destroy()
 	QDEL_NULL(wires)
 	return ..()
+
+/obj/machinery/mecha_part_fabricator/proc/on_techweb_update()
+	SIGNAL_HANDLER
+
+	// We're probably going to get more than one update (design) at a time, so batch
+	// them together.
+	addtimer(CALLBACK(src, .proc/update_menu_tech), 2 SECONDS, TIMER_UNIQUE | TIMER_OVERRIDE)
+
+/**
+ * Updates the `final_sets` and `buildable_parts` for the current mecha fabricator.
+ */
+/obj/machinery/mecha_part_fabricator/proc/update_menu_tech()
+	if (!islist(cached_designs))
+		cached_designs = list()
+
+	var/previous_design_count = cached_designs.len
+
+	cached_designs.Cut()
+
+	for(var/design_id in stored_research.researched_designs)
+		var/datum/design/design = SSresearch.techweb_design_by_id(design_id)
+
+		if(design?.build_type & MECHFAB)
+			cached_designs |= design
+
+	var/design_delta = cached_designs.len - previous_design_count
+
+	if(design_delta > 0)
+		say("Received [design_delta] new design[design_delta == 1 ? "" : "s"].")
+		playsound(src, 'sound/machines/twobeep_high.ogg', 50, TRUE)
+
+	update_static_data_for_all_viewers()
 	
 /obj/machinery/mecha_part_fabricator/RefreshParts()
 	var/T = 0
@@ -112,43 +139,49 @@
 		var/new_build_time = (new_const_time / last_const_time) * const_time_left
 		build_finish = world.time + new_build_time
 
-	update_static_data(usr)
+	update_static_data_for_all_viewers()
 
 /obj/machinery/mecha_part_fabricator/examine(mob/user)
 	. = ..()
 	if(in_range(user, src) || isobserver(user))
 		. += span_notice("The status display reads: Storing up to <b>[rmat.local_size]</b> material units.<br>Material consumption at <b>[component_coeff*100]%</b>.<br>Build time reduced by <b>[100-time_coeff*100]%</b>.")
 
-/obj/machinery/mecha_part_fabricator/attackby(obj/item/I, mob/living/user, params)
-	if(panel_open && is_wire_tool(I))
+/obj/machinery/mecha_part_fabricator/attackby(obj/item/weapon, mob/living/user, params)
+	if(panel_open && is_wire_tool(weapon))
 		wires.interact(user)
 		return TRUE
-	if(I.GetID())
-		var/obj/item/card/id/C = I.GetID()
-		if(obj_flags & EMAGGED)
-			to_chat(user, span_warning("The authentication slot spits sparks at you and the display reads scrambled text!"))
-			do_sparks(1, FALSE, src)
-			authorization_override = TRUE //just in case it wasn't already for some reason. keycard reader is busted.
-			return
-		if(ACCESS_HEADS in C.access)
-			if(!authorization_override)
-				authorization_override = TRUE
-				to_chat(user, span_warning("You override the safety protocols on the [src], removing access restrictions from this terminal."))
-			else
-				authorization_override = FALSE
-				to_chat(user, span_notice("You reengage the safety protocols on the [src], restoring access restrictions to this terminal."))
-			update_static_data(user)
+
+	if(!weapon.GetID())
+		return ..()
+
+	var/obj/item/card/id/id_card = weapon.GetID()
+	if(obj_flags & EMAGGED)
+		to_chat(user, span_warning("The authentication slot spits sparks at you and the display reads scrambled text!"))
+		do_sparks(1, FALSE, src)
+		authorization_override = TRUE //just in case it wasn't already for some reason. keycard reader is busted.
 		return
-	return ..()
+
+	if(!(ACCESS_HEADS in id_card.access))
+		return
+		
+	if(!authorization_override)
+		authorization_override = TRUE
+		to_chat(user, span_warning("You override the safety protocols on the [src], removing access restrictions from this terminal."))
+	else
+		authorization_override = FALSE
+		to_chat(user, span_notice("You reengage the safety protocols on the [src], restoring access restrictions to this terminal."))
+
+	update_static_data_for_all_viewers()
+
 /**
  * All the negative wire effects
  * Break wire breaks one limb (Because pain is to be had)
 */
 /obj/machinery/mecha_part_fabricator/_try_interact(mob/user)
-	if(seconds_electrified && !(stat & NOPOWER))
-		if(shock(user, 100))
-			return
-	return ..()
+	if(!seconds_electrified || (stat & NOPOWER))
+		return ..()
+
+	shock(user, 100)
 
 /obj/machinery/mecha_part_fabricator/proc/wire_break(mob/user)
 	if(stat & (BROKEN|NOPOWER))
@@ -169,10 +202,12 @@
 		qdel(break_it)
 
 /obj/machinery/mecha_part_fabricator/proc/reset(wire)
-	switch(wire)
-		if(WIRE_HACK)
-			if(!wires.is_cut(wire))
-				hacked = FALSE
+	if(wire != WIRE_HACK)
+		return 
+
+	if(!wires.is_cut(wire))
+		hacked = FALSE
+
 /**
   * Shock the passed in user
   *
@@ -186,120 +221,12 @@
 /obj/machinery/mecha_part_fabricator/proc/shock(mob/user, prb)
 	if(stat & (BROKEN|NOPOWER))		// unpowered, no shock
 		return FALSE
+
 	if(!prob(prb))
 		return FALSE
+
 	do_sparks(5, TRUE, src)
-	var/check_range = TRUE
-	if(electrocute_mob(user, get_area(src), src, 0.7, check_range))
-		return TRUE
-	else
-		return FALSE
-/**
-  * Generates an info list for a given part.
-  *
-  * Returns a list of part information.
-  * * D - Design datum to get information on.
-  * * categories - Boolean, whether or not to parse snowflake categories into the part information list.
-  */
-/obj/machinery/mecha_part_fabricator/proc/output_part_info(datum/design/D, categories = FALSE)
-	var/cost = list()
-	for(var/c in D.materials)
-		var/datum/material/M = c
-		cost[M.name] = get_resource_cost_w_coeff(D, M)
-
-	var/obj/built_item = D.build_path
-
-	var/list/category_override = null
-	var/list/sub_category = null
-	
-	if(categories)
-		// Handle some special cases to build up sub-categories for the fab interface.
-		// Start with checking if this design builds a cyborg module.
-		if(built_item in typesof(/obj/item/borg/upgrade))
-			var/obj/item/borg/upgrade/U = built_item
-			var/module_types = initial(U.module_flags)
-			sub_category = list()
-			if(module_types)
-				if(module_types & BORG_MODULE_SECURITY)
-					sub_category += "Security"
-				if(module_types & BORG_MODULE_MINER)
-					sub_category += "Mining"
-				if(module_types & BORG_MODULE_JANITOR)
-					sub_category += "Janitor"
-				if(module_types & BORG_MODULE_MEDICAL)
-					sub_category += "Medical"
-				if(module_types & BORG_MODULE_ENGINEERING)
-					sub_category += "Engineering"
-			else
-				sub_category += "All Cyborgs"
-		// Else check if this design builds a piece of exosuit equipment.
-		else if(built_item in typesof(/obj/item/mecha_parts/mecha_equipment))
-			var/obj/item/mecha_parts/mecha_equipment/E = built_item
-			var/mech_types = initial(E.mech_flags)
-			sub_category = "Equipment"
-			if(mech_types)
-				category_override = list()
-				if(mech_types & EXOSUIT_MODULE_RIPLEY)
-					category_override += "Ripley"
-				if(mech_types & EXOSUIT_MODULE_ODYSSEUS)
-					category_override += "Odysseus"
-				if(mech_types & EXOSUIT_MODULE_FIREFIGHTER)
-					category_override += "Firefighter"
-				if(mech_types & EXOSUIT_MODULE_GYGAX)
-					category_override += "Gygax"
-				if(mech_types & EXOSUIT_MODULE_DURAND)
-					category_override += "Durand"
-				if(mech_types & EXOSUIT_MODULE_HONK)
-					category_override += "H.O.N.K"
-				if(mech_types & EXOSUIT_MODULE_PHAZON)
-					category_override += "Phazon"
-				if(mech_types & EXOSUIT_MODULE_SIDEWINDER)
-					category_override += "Sidewinder"
-
-
-	var/list/part = list(
-		"name" = D.name,
-		"desc" = initial(built_item.desc),
-		"printTime" = get_construction_time_w_coeff(initial(D.construction_time))/10,
-		"cost" = cost,
-		"id" = D.id,
-		"subCategory" = sub_category,
-		"categoryOverride" = category_override,
-		"searchMeta" = D.search_metadata
-	)
-
-	return part
-
-/**
-  * Generates a list of resources / materials available to this Exosuit Fab
-  *
-  * Returns null if there is no material container available.
-  * List format is list(material_name = list(amount = ..., ref = ..., etc.))
-  */
-/obj/machinery/mecha_part_fabricator/proc/output_available_resources()
-	var/datum/component/material_container/materials = rmat.mat_container
-
-	var/list/material_data = list()
-
-	if(materials)
-		for(var/mat_id in materials.materials)
-			var/datum/material/M = mat_id
-			var/list/material_info = list()
-			var/amount = materials.materials[mat_id]
-
-			material_info = list(
-				"name" = M.name,
-				"ref" = REF(M),
-				"amount" = amount,
-				"sheets" = round(amount / MINERAL_MATERIAL_AMOUNT),
-				"removable" = amount >= MINERAL_MATERIAL_AMOUNT
-			)
-
-			material_data += list(material_info)
-
-		return material_data
-
-	return null
+	return electrocute_mob(user, get_area(src), src, 0.7, TRUE)
 
 /**
   * Intended to be called when an item starts printing.
@@ -437,58 +364,47 @@
 			build_next_in_queue(FALSE)
 		return TRUE
 	
-
 /**
   * Dispenses a part to the tile infront of the Exosuit Fab.
   *
   * Returns FALSE is the machine cannot dispense the part on the appropriate turf.
   * Return TRUE if the part was successfully dispensed.
-  * * D - Design datum to attempt to dispense.
+  * * design_to_dispense - Design datum to attempt to dispense.
   */
-/obj/machinery/mecha_part_fabricator/proc/dispense_built_part(datum/design/D)
-	var/obj/item/I = new D.build_path(src)
-	//I.set_custom_materials(build_materials)
+/obj/machinery/mecha_part_fabricator/proc/dispense_built_part(datum/design/design_to_dispense)
+	var/obj/item/item_to_dispense = new design_to_dispense.build_path(src)
+	
 	being_built = null
 
 	var/turf/exit = get_step(src,(dir))
 	if(exit.density)
 		say("Error! Part outlet is obstructed.")
 		desc = "It's trying to dispense \a [D.name], but the part outlet is obstructed."
-		stored_part = I
+		stored_part = item_to_dispense
 		return FALSE
 
-	say("\The [I] is complete.")
-	I.forceMove(exit)
-	return TRUE
+	say("\The [item_to_dispense] is complete.")
+	item_to_dispense.forceMove(exit)
 
-/**
-  * Adds a list of datum designs to the build queue.
-  *
-  * Will only add designs that are in this machine's stored techweb.
-  * Does final checks for datum IDs and makes sure this machine can build the designs.
-  * * part_list - List of datum design ids for designs to add to the queue.
-  */
-/obj/machinery/mecha_part_fabricator/proc/add_part_set_to_queue(list/part_list, mob/user)
-	for(var/v in stored_research.researched_designs)
-		var/datum/design/D = SSresearch.techweb_design_by_id(v)
-		if((D.build_type & MECHFAB) && (D.id in part_list) && (!D.combat_design || combat_parts_allowed(user)))
-			add_to_queue(D, user)
+	top_job_id += 1
+
+	return TRUE
 
 /**
   * Adds a datum design to the build queue.
   *
   * Returns TRUE if successful and FALSE if the design was not added to the queue.
-  * * D - Datum design to add to the queue.
+  * * design_to_enqueue - Datum design to add to the queue.
   */
-/obj/machinery/mecha_part_fabricator/proc/add_to_queue(datum/design/D, mob/user)
-	if(D.combat_design && !combat_parts_allowed(user))
+/obj/machinery/mecha_part_fabricator/proc/add_to_queue(datum/design/design_to_enqueue, mob/user)
+	if(!(design_to_enqueue?.build_type & MECHFAB) || !design_available(design_to_enqueue, user))
 		return FALSE
-	if(!istype(queue))
+
+	if(!islist(queue))
 		queue = list()
-	if(D)
-		queue[++queue.len] = D
-		return TRUE
-	return FALSE
+
+	queue[++queue.len] = design_to_enqueue
+	return TRUE
 
 /**
   * Removes datum design from the build queue based on index.
@@ -497,25 +413,11 @@
   * * index - Index in the build queue of the element to remove.
   */
 /obj/machinery/mecha_part_fabricator/proc/remove_from_queue(index)
-	if(!isnum(index) || !ISINTEGER(index) || !istype(queue) || (index<1 || index>length(queue)))
+	if(!isnum(index) || !ISINTEGER(index) || !islist(queue) || (index<1 || index>length(queue)))
 		return FALSE
+
 	queue.Cut(index,++index)
 	return TRUE
-
-/**
-  * Generates a list of parts formatted for tgui based on the current build queue.
-  *
-  * Returns a formatted list of lists containing formatted part information for every part in the build queue.
-  */
-/obj/machinery/mecha_part_fabricator/proc/list_queue()
-	if(!istype(queue) || !length(queue))
-		return null
-
-	var/list/queued_parts = list()
-	for(var/datum/design/D in queue)
-		var/list/part = output_part_info(D)
-		queued_parts += list(part)
-	return queued_parts
 
 /**
   * Calculates the coefficient-modified resource cost of a single material component of a design's recipe.
@@ -540,7 +442,8 @@
 
 /obj/machinery/mecha_part_fabricator/ui_assets(mob/user)
 	return list(
-		get_asset_datum(/datum/asset/spritesheet/sheetmaterials)
+		get_asset_datum(/datum/asset/spritesheet/sheetmaterials),
+		get_asset_datum(/datum/asset/spritesheet/research_designs)
 	)
 
 /obj/machinery/mecha_part_fabricator/ui_status(mob/user)
@@ -557,63 +460,65 @@
 /obj/machinery/mecha_part_fabricator/ui_static_data(mob/user)
 	var/list/data = list()
 
-	var/list/final_sets = part_sets.Copy()
-	var/list/buildable_parts = list()
-
-	for(var/v in stored_research.researched_designs)
-		var/datum/design/D = SSresearch.techweb_design_by_id(v)
-		if(D.build_type & MECHFAB)
-			if(D.combat_design && !combat_parts_allowed(user)) // Yogs -- ID swiping for combat parts
-				continue
-			// This is for us.
-			var/list/part = output_part_info(D, TRUE)
-
-			if(part["category_override"])
-				for(var/cat in part["category_override"])
-					buildable_parts[cat] += list(part)
-					if(!(cat in part_sets))
-						final_sets += cat
-				continue
-
-			for(var/cat in part_sets)
-				// Find all matching categories.
-				if(!(cat in D.category))
-					continue
-
-				buildable_parts[cat] += list(part)
-	data["partSets"] = final_sets
-	data["buildableParts"] = buildable_parts
+	data["designs"] = handle_designs(cached_designs)
 
 	return data
 
+/obj/machinery/mecha_part_fabricator/proc/handle_designs(list/designs)
+	var/list/designs = list()
+
+	var/datum/asset/spritesheet/research_designs/spritesheet = get_asset_datum(/datum/asset/spritesheet/research_designs)
+	var/size32x32 = "[spritesheet.name]32x32"
+
+	for(var/datum/design/design in designs)
+		if (!design_available(design, user))
+			continue
+
+		var/cost = list()
+
+		for(var/datum/material/material in design.materials)
+			cost[material.name] = get_resource_cost_w_coeff(design, material)
+
+		var/icon_size = spritesheet.icon_size_id(design.id)
+
+		designs[design.id] = list(
+			"name" = design.name,
+			"desc" = design.get_description(),
+			"cost" = cost,
+			"id" = design.id,
+			"categories" = design.category,
+			"icon" = "[icon_size == size32x32 ? "" : "[icon_size] "][design.id]",
+			"constructionTime" = get_construction_time_w_coeff(design.construction_time)
+		)
+
+	return designs
+
 /obj/machinery/mecha_part_fabricator/ui_data(mob/user)
 	var/list/data = list()
-	data["materials"] = output_available_resources()
+
+	data["materials"] = rmat.mat_container?.ui_data()
+	data["queue"] = list()
+	data["processing"] = process_queue
 
 	if(being_built)
-		var/list/part = list(
-			"name" = being_built.name,
-			"duration" = build_finish - world.time,
-			"printTime" = get_construction_time_w_coeff(initial(being_built.construction_time))
-		)
-		data["buildingPart"] = part
-	else
-		data["buildingPart"] = null
+		data["queue"] += list(list(
+			"jobId" = top_job_id,
+			"designId" = being_built.id,
+			"processing" = TRUE,
+			"timeLeft" = (build_finish - world.time)
+		))
 
-	data["queue"] = list_queue()
+	var/offset = 0
 
-	if(stored_part)
-		data["storedPart"] = stored_part.name
-	else
-		data["storedPart"] = null
+	for(var/datum/design/design in queue)
+		offset += 1
 
-	data["isProcessingQueue"] = process_queue
-	data["authorization"] = authorization_override
-	data["user_clearance"] = head_or_silicon(user)
-	data["alert_level"] = GLOB.security_level 
-	data["combat_parts_allowed"] = combat_parts_allowed(user)
-	data["emagged"] = (obj_flags & EMAGGED)
-	data["silicon_user"] = issilicon(user)
+		data["queue"] += list(list(
+				"jobId" = top_job_id + offset,
+				"designId" = design.id,
+				"processing" = FALSE,
+				"timeLeft" = get_construction_time_w_coeff(design.construction_time) / 10 DECISECONDS
+		))
 
 	return data
 
@@ -621,12 +526,28 @@
 /obj/machinery/mecha_part_fabricator/proc/combat_parts_allowed(mob/user)
 	return authorization_override || GLOB.security_level >= SEC_LEVEL_RED || head_or_silicon(user)
 
+/**
+  * Checks whether design is available for user.
+  *
+  * Returns TRUE if the design is available for user, FALSE otherwise.
+  * * design_to_check - Design datum to check.
+  * * user - Mob to check availability for.
+  */
+/obj/machinery/mecha_part_fabricator/proc/design_available(datum/design/design_to_check, mob/user)
+	if (!design_to_check)
+		return FALSE
+
+	return !design_to_check.combat_design || combat_parts_allowed(user)
+
 /// made as a lazy check to allow silicons full access always
 /obj/machinery/mecha_part_fabricator/proc/head_or_silicon(mob/user)
+	if(!user)
+		return FALSE
+
 	if(issilicon(user))
 		return TRUE
-	id_card = user.get_idcard(hand_first = TRUE)
-	return ACCESS_HEADS in id_card?.access
+
+	return ACCESS_HEADS in user.get_idcard(hand_first = TRUE)?.access
 
 /obj/machinery/mecha_part_fabricator/ui_act(action, list/params)
 	. = ..()
@@ -639,101 +560,81 @@
 	usr.set_machine(src)
 
 	switch(action)
-		if("sync_rnd")
-			// Syncronises designs on interface with R&D techweb.
-			update_static_data(usr)
-			say("Successfully synchronized with R&D server.")
+		if("build")
+			var/designs = params["designs"]
+
+			if(!islist(designs))
+				return
+
+			for(var/design_id in designs)
+				if(!istext(design_id))
+					continue
+
+				if(!stored_research.researched_designs.Find(design_id))
+					continue
+
+				var/datum/design/design = SSresearch.techweb_design_by_id(design_id)
+
+				if(design.id != design_id)
+					continue
+
+				add_to_queue(design, usr)
+
+			if(params["now"])
+				if(process_queue)
+					return
+
+
+				process_queue = TRUE
+
+				if(!being_built)
+					begin_processing()
+
 			return
-		if("add_queue_set")
-			// Add all parts of a set to queue
-			var/part_list = params["part_list"]
-			add_part_set_to_queue(part_list, usr)
-			return
-		if("add_queue_part")
-			// Add a specific part to queue
-			var/T = params["id"]
-			for(var/v in stored_research.researched_designs)
-				var/datum/design/D = SSresearch.techweb_design_by_id(v)
-				if((D.build_type & MECHFAB) && (D.id == T))
-					add_to_queue(D, usr)
-					break
-			return
+
 		if("del_queue_part")
 			// Delete a specific from from the queue
 			var/index = text2num(params["index"])
 			remove_from_queue(index)
+
 			return
+
 		if("clear_queue")
 			// Delete everything from queue
 			queue.Cut()
+
 			return
+
 		if("build_queue")
 			// Build everything in queue
 			if(process_queue)
 				return
+
 			process_queue = TRUE
 
 			if(!being_built)
 				begin_processing()
+
 			return
+
 		if("stop_queue")
 			// Pause queue building. Also known as stop.
 			process_queue = FALSE
-			return
-		if("build_part")
-			// Build a single part
-			if(being_built || process_queue)
-				return
-
-			var/id = params["id"]
-			var/datum/design/D = SSresearch.techweb_design_by_id(id)
-
-			if(!(D.build_type & MECHFAB) || !(D.id == id))
-				return
-
-			if(build_part(D))
-				on_start_printing()
-				begin_processing()
 
 			return
-		if("move_queue_part")
-			// Moves a part up or down in the queue.
-			var/index = text2num(params["index"])
-			var/new_index = index + text2num(params["newindex"])
-			if(isnum(index) && isnum(new_index) && ISINTEGER(index) && ISINTEGER(new_index))
-				if(ISINRANGE(new_index,1,length(queue)))
-					queue.Swap(index,new_index)
-			return
+
 		if("remove_mat")
-			// Remove a material from the fab
-			var/mat_ref = params["ref"]
+			var/datum/material/material = locate(params["ref"])
 			var/amount = text2num(params["amount"])
-			var/datum/material/mat = locate(mat_ref)
-			eject_sheets(mat, amount)
+
+			if (!amount)
+				return
+
+			// SAFETY: eject_sheets checks for valid mats
+			rmat.eject_sheets(material, amount)
 			return
 
 	return FALSE
-
-/**
-  * Eject material sheets.
-  *
-  * Returns the number of sheets successfully ejected.
-  * eject_sheet - Byond REF of the material to eject.
-  *	eject_amt - Number of sheets to attempt to eject.
-  */
-/obj/machinery/mecha_part_fabricator/proc/eject_sheets(eject_sheet, eject_amt)
-	var/datum/component/material_container/mat_container = rmat.mat_container
-	if (!mat_container)
-		say("No access to material storage, please contact the quartermaster.")
-		return 0
-	if (rmat.on_hold())
-		say("Mineral access is on hold, please contact the quartermaster.")
-		return 0
-	var/count = mat_container.retrieve_sheets(text2num(eject_amt), eject_sheet, drop_location())
-	var/list/matlist = list()
-	matlist[eject_sheet] = text2num(eject_amt)
-	rmat.silo_log(src, "ejected", -count, "sheets", matlist)
-	return count
 
 /obj/machinery/mecha_part_fabricator/proc/AfterMaterialInsert(item_inserted, id_inserted, amount_inserted)
 	var/datum/material/M = id_inserted
@@ -773,7 +674,8 @@
 	to_chat(user, span_notice("You short out [src]'s safeties."))
 	authorization_override = TRUE
 	obj_flags |= EMAGGED
-	update_static_data(user)
+
+	update_static_data_for_all_viewers()
 
 /obj/machinery/mecha_part_fabricator/maint
 	link_on_init = FALSE

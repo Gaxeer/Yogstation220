@@ -21,27 +21,45 @@ other types of metals and chemistry for reagents).
 //DO NOT REFERENCE OUTSIDE OF SSRESEARCH. USE THE PROCS IN SSRESEARCH TO OBTAIN A REFERENCE.
 
 /datum/design						//Datum for object designs, used in construction
-	var/name = "Name"					//Name of the created object.
-	var/desc = "Desc"					//Description of the created object.
-	var/id = DESIGN_ID_IGNORE						//ID of the created object for easy refernece. Alphanumeric, lower-case, no symbols
-	var/build_type = null				//Flag as to what kind machine the design is built in. See defines.
-	var/list/materials = list()			//List of materials. Format: "id" = amount.
-	var/construction_time				//Amount of time required for building the object
-	var/build_path = null				//The file path of the object that gets created
-	var/list/make_reagents = list()			//Reagents produced. Format: "id" = amount. Currently only supported by the biogenerator.
-	var/list/category = null 			//Primarily used for Mech Fabricators, but can be used for anything
-	var/list/reagents_list = list()			//List of reagents. Format: "id" = amount.
+	/// Name of the created object.
+	var/name = "Name"		
+	/// Description of the created object.			
+	var/desc = "Desc"
+	/// ID of the created object for easy refernece. Alphanumeric, lower-case, no symbols					
+	var/id = DESIGN_ID_IGNORE	
+	/// Flag as to what kind machine the design is built in. See defines.					
+	var/build_type = null	
+	/// List of materials. Format: "id" = amount.			
+	var/list/materials = list()	
+	/// Amount of time required for building the object		
+	var/construction_time	
+	/// The file path of the object that gets created			
+	var/build_path = null		
+	/// Reagents produced. Format: "id" = amount. Currently only supported by the biogenerator.		
+	var/list/make_reagents = list()		
+	/// What categories this design falls under. Used for sorting in production machines.
+	var/list/category = list()
+	/// List of reagents. Format: "id" = amount.			
+	var/list/reagents_list = list()
+	/// The maximum number of units of whatever is produced by this can be produced in one go.	
 	var/maxstack = 1
-	var/lathe_time_factor = 1			//How many times faster than normal is this to build on the protolathe
-	var/dangerous_construction = FALSE	//notify and log for admin investigations if this is printed.
-	var/departmental_flags = ALL			//bitflags for deplathes.
+	/// How many times faster than normal is this to build on the protolathe
+	var/lathe_time_factor = 1
+	/// notify and log for admin investigations if this is printed.
+	var/dangerous_construction = FALSE	
+	/// Bitflags for deplathes.
+	var/departmental_flags = ALL	
+	/// What techwebs nodes unlock this design. Constructed by SSresearch		
 	var/list/datum/techweb_node/unlocked_by = list()
-	var/research_icon					//Replaces the item icon in the research console
+	/// Replaces the item icon in the research console
+	var/research_icon
+	/// Override for the automatic icon state generation used for the research console.	
 	var/research_icon_state
 	var/icon_cache
 	/// Optional string that interfaces can use as part of search filters. See- item/borg/upgrade/ai and the Exosuit Fabs.
 	var/search_metadata
-	var/combat_design = FALSE // Limit the mechfab producing these
+	/// Limit the mechfab producing these
+	var/combat_design = FALSE 
 
 /datum/design/error_design
 	name = "ERROR"
@@ -68,6 +86,11 @@ other types of metals and chemistry for reagents).
 	var/datum/asset/spritesheet/sheet = get_asset_datum(/datum/asset/spritesheet/research_designs)
 	sheet.send(user)
 	return sheet.icon_tag(id)
+
+/datum/design/proc/get_description()
+	var/obj/object_build_item_path = build_path
+
+	return isnull(desc) ? initial(object_build_item_path.desc) : desc
 
 ////////////////////////////////////////
 //Disks for transporting design datums//

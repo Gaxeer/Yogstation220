@@ -343,7 +343,7 @@
 /obj/item/circuitboard/computer/rdconsole
 	name = "R&D Console (Computer Board)"
 	icon_state = "science"
-	build_path = /obj/machinery/computer/rdconsole/core
+	build_path = /obj/machinery/computer/rdconsole
 
 /obj/item/circuitboard/computer/rdconsole/ruin
 	name = "Experimental R&D Console (Computer Board)"
@@ -353,22 +353,6 @@
 /obj/item/circuitboard/computer/rdconsole/production
 	name = "R&D Console Production Only (Computer Board)"
 	build_path = /obj/machinery/computer/rdconsole/production
-
-
-/obj/item/circuitboard/computer/rdconsole/attackby(obj/item/I, mob/user, params)
-	if(I.tool_behaviour == TOOL_SCREWDRIVER)
-		if(build_path == /obj/machinery/computer/rdconsole/production)
-			return
-		if(build_path == /obj/machinery/computer/rdconsole/core)
-			name = "R&D Console - Robotics (Computer Board)"
-			build_path = /obj/machinery/computer/rdconsole/robotics
-			to_chat(user, span_notice("Access protocols successfully updated."))
-		else
-			name = "R&D Console (Computer Board)"
-			build_path = /obj/machinery/computer/rdconsole/core
-			to_chat(user, span_notice("Defaulting access protocols."))
-	else
-		return ..()
 
 /obj/item/circuitboard/computer/rdservercontrol
 	name = "R&D Server Control (Computer Board)"

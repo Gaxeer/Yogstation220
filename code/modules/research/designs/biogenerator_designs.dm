@@ -8,7 +8,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 20)
 	make_reagents = list(/datum/reagent/consumable/milk = 10)
-	category = list("initial","Kitchen Chemicals")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/soymilk
 	name = "10u Soy Milk"
@@ -16,7 +16,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 50)
 	make_reagents = list(/datum/reagent/consumable/soymilk = 10)
-	category = list("initial","Kitchen Chemicals")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/soysauce
 	name = "10u Soy Sauce"
@@ -24,7 +24,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 75)
 	make_reagents = list(/datum/reagent/consumable/soysauce = 10)
-	category = list("initial","Kitchen Chemicals")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/cream
 	name = "10u Cream"
@@ -32,7 +32,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 30)
 	make_reagents = list(/datum/reagent/consumable/cream = 10)
-	category = list("initial","Kitchen Chemicals")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/black_pepper
 	name = "10u Black Pepper"
@@ -40,7 +40,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 25)
 	make_reagents = list(/datum/reagent/consumable/blackpepper = 10)
-	category = list("initial","Kitchen Chemicals")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/salt
 	name = "10u Salt"
@@ -48,7 +48,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 25)
 	make_reagents = list(/datum/reagent/consumable/sodiumchloride = 10)
-	category = list("initial","Kitchen Chemicals")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/enzyme
 	name = "10u Universal Enzyme"
@@ -56,7 +56,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 30)
 	make_reagents = list(/datum/reagent/consumable/enzyme = 10)
-	category = list("initial","Kitchen Chemicals")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/flour_sack
 	name = "Flour Sack"
@@ -64,7 +64,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 150)
 	build_path = /obj/item/reagent_containers/food/condiment/flour
-	category = list("initial","Food")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/rice_sack
 	name = "Rice Sack"
@@ -72,7 +72,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 300)
 	build_path = /obj/item/reagent_containers/food/condiment/rice
-	category = list("initial","Food")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/meat
 	name = "Synthetic meat"
@@ -80,7 +80,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 150)
 	build_path = /obj/item/reagent_containers/food/snacks/meat/slab
-	category = list("initial","Food")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/egg
 	name = "Synthetic egg"
@@ -88,7 +88,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 100)
 	build_path = /obj/item/reagent_containers/food/snacks/egg
-	category = list("initial","Food")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/monkey_cube
 	name = "Monkey Cube"
@@ -96,7 +96,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 250)
 	build_path = /obj/item/reagent_containers/food/snacks/monkeycube
-	category = list("initial", "Food")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/goat_cube
 	name = "Goat Cube"
@@ -104,7 +104,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 350)
 	build_path = /obj/item/reagent_containers/food/snacks/monkeycube/goat
-	category = list("initial", "Food")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/cow_cube
 	name = "Cow Cube"
@@ -112,7 +112,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 500)
 	build_path = /obj/item/reagent_containers/food/snacks/monkeycube/cow
-	category = list("initial", "Food")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/chicken_cube
 	name = "Chicken Cube"
@@ -120,7 +120,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 200)
 	build_path = /obj/item/reagent_containers/food/snacks/monkeycube/chicken
-	category = list("initial", "Food")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/sheep_cube
 	name = "Sheep Cube"
@@ -128,7 +128,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 350)
 	build_path = /obj/item/reagent_containers/food/snacks/monkeycube/sheep
-	category = list("initial", "Food")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/seaweed_sheet
 	name = "Seaweed Sheet"
@@ -136,7 +136,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass= 30)
 	build_path = /obj/item/reagent_containers/food/snacks/seaweedsheet
-	category = list("initial","Food")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_FOOD)
 
 /datum/design/ez_nut
 	name = "E-Z Nutrient"
@@ -144,7 +144,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 10)
 	build_path = /obj/item/reagent_containers/glass/bottle/nutrient/ez
-	category = list("initial","Botany Chemicals")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_BOTANY_CHEMICALS)
 
 /datum/design/l4z_nut
 	name = "Left 4 Zed"
@@ -152,7 +152,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 20)
 	build_path = /obj/item/reagent_containers/glass/bottle/nutrient/l4z
-	category = list("initial","Botany Chemicals")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_BOTANY_CHEMICALS)
 
 /datum/design/rh_nut
 	name = "Robust Harvest"
@@ -160,7 +160,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 25)
 	build_path = /obj/item/reagent_containers/glass/bottle/nutrient/rh
-	category = list("initial","Botany Chemicals")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_BOTANY_CHEMICALS)
 
 /datum/design/weed_killer
 	name = "Weed Killer"
@@ -168,7 +168,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 50)
 	build_path = /obj/item/reagent_containers/glass/bottle/killer/weedkiller
-	category = list("initial","Botany Chemicals")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_BOTANY_CHEMICALS)
 
 /datum/design/pest_spray
 	name = "Pest Killer"
@@ -176,7 +176,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 50)
 	build_path = /obj/item/reagent_containers/glass/bottle/killer/pestkiller
-	category = list("initial","Botany Chemicals")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_BOTANY_CHEMICALS)
 
 /datum/design/botany_bottle
 	name = "Empty Bottle"
@@ -184,7 +184,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 5)
 	build_path = /obj/item/reagent_containers/glass/bottle/nutrient/empty
-	category = list("initial", "Botany Chemicals")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_BOTANY_CHEMICALS)
 
 /datum/design/rollingpapers
 	name = "Rolling Papers"
@@ -192,7 +192,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 50)
 	build_path = /obj/item/storage/box/fancy/rollingpapers
-	category = list("initial", "Organic Materials")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_ORGANIC_MATERIALS)
 
 /datum/design/cloth
 	name = "Roll of Cloth"
@@ -200,7 +200,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 50)
 	build_path = /obj/item/stack/sheet/cloth
-	category = list("initial","Organic Materials")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_ORGANIC_MATERIALS)
 
 /datum/design/cardboard
 	name = "Sheet of Cardboard"
@@ -208,7 +208,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 25)
 	build_path = /obj/item/stack/sheet/cardboard
-	category = list("initial","Organic Materials")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_ORGANIC_MATERIALS)
 
 /datum/design/leather
 	name = "Sheet of Leather"
@@ -216,7 +216,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 150)
 	build_path = /obj/item/stack/sheet/leather
-	category = list("initial","Organic Materials")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_ORGANIC_MATERIALS)
 
 /datum/design/tape
 	name = "Roll of Tape"
@@ -224,7 +224,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 50)
 	build_path = /obj/item/stack/tape
-	category = list("initial","Organic Materials")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_ORGANIC_MATERIALS)
 
 /datum/design/secbelt
 	name = "Security Belt"
@@ -232,7 +232,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 300)
 	build_path = /obj/item/storage/belt/security
-	category = list("initial","Organic Materials")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_ORGANIC_MATERIALS)
 
 /datum/design/medbelt
 	name = "Medical Belt"
@@ -240,7 +240,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 300)
 	build_path = /obj/item/storage/belt/medical
-	category = list("initial","Organic Materials")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_ORGANIC_MATERIALS)
 
 /datum/design/janibelt
 	name = "Janitorial Belt"
@@ -248,7 +248,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 300)
 	build_path = /obj/item/storage/belt/janitor
-	category = list("initial","Organic Materials")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_ORGANIC_MATERIALS)
 
 /datum/design/s_holster
 	name = "Shoulder Holster"
@@ -256,7 +256,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 400)
 	build_path = /obj/item/storage/belt/holster
-	category = list("initial","Organic Materials")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_ORGANIC_MATERIALS)
 
 /datum/design/rice_hat
 	name = "Rice Hat"
@@ -264,7 +264,7 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 300)
 	build_path = /obj/item/clothing/head/rice_hat
-	category = list("initial","Organic Materials")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_ORGANIC_MATERIALS)
 
 /datum/design/mutagen
 	name = "Unstable Mutagen"
@@ -272,4 +272,4 @@
 	build_type = BIOGENERATOR
 	materials = list(/datum/material/biomass = 600)
 	build_path = /obj/item/reagent_containers/glass/bottle/mutagen
-	category = list("initial","Botany Chemicals")
+	category = list(RND_CATEGORY_INITIAL, RND_CATEGORY_BOTANY_CHEMICALS)

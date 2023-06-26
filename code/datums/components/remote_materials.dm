@@ -122,3 +122,32 @@ handles linking back and forth.
 		return "[mat_container.total_amount] / [mat_container.max_amount == INFINITY ? "Unlimited" : mat_container.max_amount] ([silo ? "remote" : "local"])"
 	else
 		return "0 / 0"
+
+/**
+  * Ejects the given material ref and logs it, or says out loud the problem.
+  *
+  * Returns the number of sheets successfully ejected.
+  * Returns 0 if something went wrong or if 0 was passed as eject_amount.
+  *
+  * Arguments:
+  * * material_ref - Byond REF of the material to eject.
+  *	* eject_amount - Amount of sheets to attempt to eject.
+  */
+/datum/component/remote_materials/proc/eject_sheets(datum/material/material_ref, eject_amount)
+	var/atom/movable/movable_parent = parent
+	if (!istype(movable_parent))
+		return 0
+
+	if (!mat_container)
+		movable_parent.say("No access to material storage, please contact the quartermaster.")
+		return 0
+
+	if (on_hold())
+		movable_parent.say("Mineral access is on hold, please contact the quartermaster.")
+		return 0
+		
+	var/count = mat_container.retrieve_sheets(eject_amount, material_ref, movable_parent.drop_location())
+	var/list/matlist = list()
+	matlist[material_ref] = eject_amount
+	silo_log(parent, "ejected", -count, "sheets", matlist)
+	return count

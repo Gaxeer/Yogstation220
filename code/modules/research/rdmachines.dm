@@ -9,20 +9,27 @@
 	use_power = IDLE_POWER_USE
 	var/busy = FALSE
 	var/hacked = FALSE
-	var/console_link = TRUE		//allow console link.
-	var/requires_console = TRUE
 	var/disabled = FALSE
-	var/obj/machinery/computer/rdconsole/linked_console
-	var/obj/item/loaded_item = null //the item loaded inside the machine (currently only used by experimentor and destructive analyzer)
+
+	/// Allow console link.
+	var/console_link = TRUE		
+	
+	/// The item loaded inside the machine (currently only used by experimentor and destructive analyzer)
+	var/obj/item/loaded_item = null 
+	
+	/// Ref to global science techweb.
+	var/datum/techweb/stored_research
 
 /obj/machinery/rnd/proc/reset_busy()
 	busy = FALSE
 
 /obj/machinery/rnd/Initialize()
 	. = ..()
+	stored_research = SSresearch.science_tech
 	wires = new /datum/wires/rnd(src)
 
 /obj/machinery/rnd/Destroy()
+	stored_research = null
 	QDEL_NULL(wires)
 	return ..()
 
@@ -39,8 +46,6 @@
 
 /obj/machinery/rnd/attackby(obj/item/O, mob/user, params)
 	if (default_deconstruction_screwdriver(user, "[initial(icon_state)]_t", initial(icon_state), O))
-		if(linked_console)
-			disconnect_console()
 		return
 	if(default_deconstruction_crowbar(O))
 		return
@@ -50,10 +55,6 @@
 		return TRUE
 	else
 		return ..()
-
-//to disconnect the machine from the r&d console it's linked to
-/obj/machinery/rnd/proc/disconnect_console()
-	linked_console = null
 
 //proc used to handle inserting items or reagents into rnd machines
 /obj/machinery/rnd/proc/Insert_Item(obj/item/I, mob/user)
@@ -65,9 +66,6 @@
 		to_chat(user, span_warning("You can't load [src] while it's opened!"))
 		return FALSE
 	if(disabled)
-		return FALSE
-	if(requires_console && !linked_console)
-		to_chat(user, span_warning("[src] must be linked to an R&D console first!"))
 		return FALSE
 	if(busy)
 		to_chat(user, span_warning("[src] is busy right now."))

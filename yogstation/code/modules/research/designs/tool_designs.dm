@@ -5,7 +5,9 @@
 	build_type = PROTOLATHE
 	materials = list(/datum/material/iron = 1000, /datum/material/glass = 500, /datum/material/diamond = 1500, /datum/material/uranium = 200)
 	build_path = /obj/item/storage/belt/tool_switcher
-	category = list("Tool Designs")
+	category = list(
+		RND_CATEGORY_TOOLS + RND_SUBCATEGORY_TOOLS_ENGINEERING
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_ENGINEERING | DEPARTMENTAL_FLAG_MEDICAL
 
 /datum/design/tricorder
@@ -15,5 +17,7 @@
 	build_type = PROTOLATHE
 	materials = list(/datum/material/iron=500,/datum/material/silver=300,/datum/material/gold=300)
 	build_path = /obj/item/multitool/tricorder
-	category = list("Tool Designs")
+	category = list(
+		RND_CATEGORY_TOOLS + RND_SUBCATEGORY_TOOLS_ENGINEERING
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_ENGINEERING

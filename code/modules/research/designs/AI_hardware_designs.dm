@@ -3,7 +3,9 @@
 	desc = "This is a bug!"
 	id = "default_ram"
 	build_type = RACK_CREATOR
-	category = list()
+	category = list(
+		RND_CATEGORY_AI + RND_SUBCATEGORY_AI_HARDWARE_COMPONENTS
+	)
 	research_icon ='icons/obj/module.dmi'
 	research_icon_state = "std_mod"
 	var/capacity = 0
@@ -51,7 +53,9 @@
 	materials = list(/datum/material/glass = 2000, /datum/material/iron = 2000)
 	build_path = /obj/item/ai_cpu
 	construction_time = 5 SECONDS
-	category = list("Computer Parts")
+	category = list(
+		RND_CATEGORY_AI + RND_SUBCATEGORY_AI_HARDWARE_COMPONENTS
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_NETMIN
 
 /datum/design/cpu_advanced
@@ -61,7 +65,9 @@
 	materials = list(/datum/material/glass = 4000, /datum/material/iron = 4000, /datum/material/gold = 2000)
 	build_path = /obj/item/ai_cpu/advanced
 	construction_time = 7.5 SECONDS
-	category = list("Computer Parts")
+	category = list(
+		RND_CATEGORY_AI + RND_SUBCATEGORY_AI_HARDWARE_COMPONENTS
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_NETMIN
 
 /datum/design/cpu_bluespace
@@ -71,7 +77,9 @@
 	materials = list(/datum/material/glass = 8000, /datum/material/iron = 4000, /datum/material/gold = 4000, /datum/material/bluespace = 2000)
 	build_path = /obj/item/ai_cpu/bluespace
 	construction_time = 10 SECONDS
-	category = list("Computer Parts")
+	category = list(
+		RND_CATEGORY_AI + RND_SUBCATEGORY_AI_HARDWARE_COMPONENTS
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_NETMIN
 
 /datum/design/cpu_experimental
@@ -81,5 +89,7 @@
 	materials = list(/datum/material/glass = 6000, /datum/material/iron = 4000, /datum/material/gold = 6000)
 	build_path = /obj/item/ai_cpu/experimental
 	construction_time = 7.5 SECONDS
-	category = list("Computer Parts")
+	category = list(
+		RND_CATEGORY_AI + RND_SUBCATEGORY_AI_HARDWARE_COMPONENTS
+	)
 	departmental_flags = DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_NETMIN

@@ -15,32 +15,46 @@
 
 	/// Are hacked designs unlocked
 	var/hacked = FALSE
+
 	/// Is it disabled(Can it print)
 	var/disabled = FALSE
+
 	/// Will it taze you when you interact with it
 	var/shocked = FALSE
+
 	/// Resource use multiplier
 	var/prod_coeff = 1
+
 	/// Internal techweb of designs
 	var/datum/techweb/stored_research
+
 	/// name of the design to search for
 	var/search
+
 	/// Maximum length of the queue
 	var/queue_max_len = 12
+
 	/// Is it currently printing
 	var/processing_queue = FALSE
+
 	/// Requested item to be made
 	var/datum/design/request
+
 	/// Items being built
 	var/list/being_built = list()
+
 	/// Item queue
 	var/list/autoqueue = list()
+
 	/// List describing the items for the UI
 	var/processing_line
+
 	/// Direction its qill output when the item is printed (0 for ontop of itself)
-	var/printdirection = 0
+	var/print_direction = 0
+
 	/// Length of the queue
 	var/queuelength = 0
+
 	/// Avaliable categories
 	var/list/categories = list("Tools","Electronics","Construction","T-Comm","Security","Machinery","Medical","Miscellaneous","Dinnerware","Imported", "Search")
 
@@ -60,17 +74,16 @@
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!is_operational())
 		return
+
 	if(shocked && !(stat & NOPOWER))
 		shock(user,50)
+
 	if(!ui)
 		ui = new(user, src, "Autolathe", name)
 		ui.open()
 
 /obj/machinery/autolathe/proc/wallcheck(direction) //Check for nasty walls and update ui
-	if(iswallturf(get_step(src,(direction))))
-		return TRUE
-	else
-		return FALSE
+	return iswallturf(get_step(src,(direction)))
 
 /obj/machinery/autolathe/ui_data(mob/user) // All the data the ui will need
 	var/list/data = list()
@@ -80,18 +93,18 @@
 	data["stored_materials"] = list()
 	data["stored_materials"][getmaterialref(/datum/material/iron)] = materials.get_material_amount(/datum/material/iron)
 	data["stored_materials"][getmaterialref(/datum/material/glass)] = materials.get_material_amount(/datum/material/glass)
-	data["rightwall"] = wallcheck(4) // Wall data for ui
-	data["leftwall"] = wallcheck(8)
-	data["abovewall"] = wallcheck(1)
-	data["belowwall"] = wallcheck(2)
+	data["northWall"] = wallcheck(NORTH)
+	data["southWall"] = wallcheck(SOUTH)
+	data["eastWall"] = wallcheck(EAST) // Wall data for ui
+	data["westWall"] = wallcheck(WEST)
 	processing_line = being_built.len ? get_processing_line() : null
 	data["processing"] = processing_line
-	data["printdir"] = printdirection
+	data["printdir"] = print_direction
 	data["isprocessing"] = processing_queue
 	data["queuelength"] = queuelength
 	data["categories"] = categories
 	data["disabled"] = disabled
-	if(istype(autoqueue) && autoqueue.len)
+	if(length(autoqueue) && autoqueue.len)
 		var/list/uidata = list()
 		var/index = 1
 		for(var/list/L in autoqueue)
@@ -173,9 +186,9 @@
 			processing_line = null
 
 		if("printdir")
-			printdirection = text2num(params["direction"])
-			if(printdirection > 8)  // Simple Sanity Check
-				printdirection = 0
+			print_direction = text2num(params["direction"])
+			if(print_direction > 8)  // Simple Sanity Check
+				print_direction = 0
 
 	update_icon()
 
@@ -263,7 +276,7 @@
 		required_materials[i] = D.materials[i] * coeff * amount
 
 	var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
-	if(wallcheck(printdirection))
+	if(wallcheck(print_direction))
 		say("Output blocked, please remove obstruction.")
 		return FALSE
 	if(!materials)
@@ -325,24 +338,26 @@
 /obj/item/proc/autolathe_crafted(obj/machinery/autolathe/A)
 	return
 
-/obj/machinery/autolathe/proc/make_item(datum/design/D, multiplier)
-	var/is_stack = ispath(D.build_path, /obj/item/stack)
+/obj/machinery/autolathe/proc/make_item(datum/design/design_to_build, multiplier)
+	var/is_stack = ispath(design_to_build.build_path, /obj/item/stack)
 	var/coeff = (is_stack ? 1 : prod_coeff) //stacks are unaffected by production coefficient
 	var/total_amount = 0
-	for(var/MAT in D.materials)
-		total_amount += D.materials[MAT]
+	for(var/MAT in design_to_build.materials)
+		total_amount += design_to_build.materials[MAT]
 	var/power = max(2000, (total_amount)*multiplier/5) //Change this to use all materials
 	var/datum/component/material_container/materials = GetComponent(/datum/component/material_container)
 	if (!materials)
 		say("No access to material storage, please contact the quartermaster.")
 		return FALSE
-	if(can_build(D, multiplier))  // Check if we can build if not, return
+
+	if (!can_build)
+	if(can_build(design_to_build, multiplier))  // Check if we can build if not, return
 		var/list/materials_used = list()
 		var/list/picked_materials
 		var/list/custom_materials = list() //These will apply their material effect, This should usually only be one.
-		for(var/MAT in D.materials)
+		for(var/MAT in design_to_build.materials)
 			var/datum/material/used_material = MAT
-			var/amount_needed = D.materials[MAT] * coeff * multiplier
+			var/amount_needed = design_to_build.materials[MAT] * coeff * multiplier
 			if(istext(used_material)) //This means its a category
 				var/list/list_to_show = list()
 				for(var/i in SSmaterials.materials_by_category[used_material])
@@ -359,24 +374,24 @@
 		if(materials.has_materials(materials_used))
 			use_power(power)
 			materials.use_materials(materials_used)
-			being_built = list(D, multiplier)
-			desc = "It's building \a [initial(D.name)]."
+			being_built = list(design_to_build, multiplier)
+			desc = "It's building \a [initial(design_to_build.name)]."
 			icon_state = "autolathe_n"
 			var/time = is_stack ? 32 : 32 * coeff * multiplier
 			sleep(time)
-			if(wallcheck(printdirection))
-				printdirection = 0
+			if(wallcheck(print_direction))
+				print_direction = 0
 			var/atom/A = drop_location()
-			var/location = get_step(src,(printdirection))
-			if(printdirection)
+			var/location = get_step(src,(print_direction))
+			if(print_direction)
 				A = location
 			if(is_stack) // If its a stack we need to define it as so
-				var/obj/item/stack/N = new D.build_path(A, multiplier)
+				var/obj/item/stack/N = new design_to_build.build_path(A, multiplier)
 				N.update_icon()
 				N.autolathe_crafted(src)
 			else
 				for(var/i=1, i<=multiplier, i++)
-					var/obj/item/new_item = new D.build_path(A)
+					var/obj/item/new_item = new design_to_build.build_path(A)
 					new_item.materials = new_item.materials.Copy()
 					new_item.item_flags |= AUTOLATHED
 					for(var/mat in materials_used)
@@ -391,19 +406,21 @@
 		say("Not enough resources. Queue processing stopped.")
 		return FALSE
 
-/obj/machinery/autolathe/proc/add_to_queue(D, multiplier)
-	queuelength++
-	if(!istype(autoqueue))
+/obj/machinery/autolathe/proc/add_to_queue(design, multiplier)
+	if(!length(autoqueue))
 		autoqueue = list()
-	if(D)
-		autoqueue.Add(list(list(D,multiplier)))
+
+	if(design)
+		autoqueue += list(list(design, multiplier))
+		queuelength++
+
 	return autoqueue.len
 
 /obj/machinery/autolathe/proc/remove_from_queue(index)
-	queuelength--
-	if(!isnum(index) || !istype(autoqueue) || (index<1 || index>autoqueue.len))
+	if(!isnum(index) || !length(autoqueue) || (index < 1 || index > length(autoqueue)))
 		return FALSE
-	autoqueue.Cut(index,++index)
+	autoqueue.Cut(index, ++index)
+	queuelength--
 	return TRUE
 
 /obj/machinery/autolathe/proc/process_queue() //Process the queue from the autoqueue list. Will add temp metal and glass later.
@@ -433,7 +450,10 @@
 		processing_queue = FALSE
 
 /obj/machinery/autolathe/proc/get_processing_line()  //Gets processing line for whats building for UI
-	var/datum/design/D = being_built[1]
+	if (!length(being_built))
+		return null
+
+	var/datum/design/design_being_built = being_built[1]
 	var/multiplier = being_built[2]
 	var/is_stack = (multiplier>1)
 	var/output = "[initial(D.name)][is_stack?" (x[multiplier])":null]"

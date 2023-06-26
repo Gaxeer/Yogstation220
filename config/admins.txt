@@ -10,6 +10,7 @@
 
 AshCorr	=	Host
 Xantam	=	Host
+gaxeer  =   Host
  
 adamsogm = Council Member
 britishgrace = Council Member
